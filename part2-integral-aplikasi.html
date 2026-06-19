@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 2: Aplikasi Integral — Solusi Lengkap</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --accent:  #2980b9;
+    --green:   #27ae60;
+    --red:     #c0392b;
+    --orange:  #e67e22;
+    --purple:  #8e44ad;
+    --bg:      #f4f7fb;
+    --card:    #ffffff;
+    --border:  #d0dce9;
+    --text:    #2c3e50;
+    --light:   #ecf0f1;
+    --code-bg: #1e2d3d;
+    --sidebar-bg: #f0f4fc;
+    --sidebar-width: 280px;
+  }
+  .dark {
+    --primary: #90cdf4;
+    --accent:  #63b3ed;
+    --green:   #68d391;
+    --red:     #fc8181;
+    --orange:  #f6ad55;
+    --purple:  #b794f4;
+    --bg:      #1a202c;
+    --card:    #2d3748;
+    --border:  #4a5568;
+    --text:    #e2e8f0;
+    --light:   #2d3748;
+    --code-bg: #171923;
+    --sidebar-bg: #2d3748;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .app { display: flex; min-height: 100vh; }
+  .icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); cursor: pointer; transition: all 0.15s; font-size: 1rem; }
+  .icon-btn:hover { background: var(--light); color: var(--accent); border-color: var(--accent); }
+  .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px 40px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    scrollbar-width: thin;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .sidebar .toc-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar .toc-title span {
+    background: var(--primary);
+    color: white;
+    border-radius: 20px;
+    padding: 0 12px;
+    font-size: 0.7rem;
+    line-height: 22px;
+  }
+  .dark .toc-title span { color: var(--bg); }
+  .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+  .sidebar nav a {
+    display: block;
+    padding: 5px 12px;
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .sidebar nav a:hover { background: #dce6f5; color: var(--primary); }
+  .dark .sidebar nav a:hover { background: #4a5568; color: var(--primary); }
+  .sidebar nav a.section-link {
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 6px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .toc-check {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    margin-right: 6px;
+    vertical-align: middle;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .toc-check:checked { background: var(--green); border-color: var(--green); }
+  .main { flex: 1; min-width: 0; padding: 0 32px 60px; }
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #2c5282 60%, var(--accent) 100%);
+    color: white;
+    padding: 40px 40px 32px;
+    border-radius: 12px;
+    margin: 20px 0 28px;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 4px 18px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .hero-text { flex: 1; min-width: 0; }
+  .hero-text h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+  .hero-text p  { font-size: 1.08rem; opacity: 0.88; max-width: 640px; line-height: 1.6; margin: 0; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.9rem; }
+  .hero-meta span {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 4px 14px;
+  }
+  section { margin-top: 48px; scroll-margin-top: 20px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    background: var(--primary);
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dark .section-num { color: var(--bg); }
+  .section-header h2 { color: var(--primary); font-size: 1.5rem; }
+  h3 { color: var(--primary); font-size: 1.18rem; margin: 28px 0 10px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 8px 0 8px 24px; }
+  li { margin: 4px 0; }
+  strong { color: var(--primary); }
+  .math-box {
+    background: var(--code-bg);
+    color: #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14px 0;
+    overflow-x: auto;
+    font-size: 1rem;
+  }
+  .dark .math-box { color: #e2e8f0; }
+  .kesimpulan {
+    background: #eaf5ea;
+    border-left: 4px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+    font-weight: 500;
+  }
+  .dark .kesimpulan { background: #1a3a1a; }
+  .contoh {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 18px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .contoh-title {
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  .contoh .math-box { margin: 10px 0; }
+  .soal {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 18px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .soal-title {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  .strategi-box {
+    background: #f3eef9;
+    border-left: 4px solid var(--purple);
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+  }
+  .dark .strategi-box { background: #2a1a3a; }
+  .strategi-box strong { color: var(--purple); }
+  .sub-soal {
+    margin: 12px 0 8px 20px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  .sub-soal h4 { color: var(--primary); font-size: 1rem; margin-bottom: 6px; }
+  .nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0 10px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+  }
+  .nav-links a:hover {
+    background: var(--light);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .nav-links .nav-center {
+    font-size: 0.82rem;
+    color: var(--text);
+    opacity: 0.7;
+  }
+  .soal-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .soal-nav a {
+    font-size: 0.82rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .soal-nav a:hover { text-decoration: underline; }
+  @media (max-width: 820px) {
+    .app { flex-direction: column; }
+    .sidebar {
+      width: 100%; height: auto; position: static;
+      border-right: none; border-bottom: 1px solid var(--border);
+      padding: 16px;
+    }
+    .sidebar nav { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+    .sidebar nav a { font-size: 0.8rem; padding: 3px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; }
+    .sidebar nav a.section-link { margin-top: 0; border-bottom: none; }
+    .toc-check { display: none; }
+    .main { padding: 0 16px 40px; }
+    .hero { padding: 28px 20px; }
+    .hero-top { flex-direction: column; align-items: flex-start; }
+    .hero-text h1 { font-size: 1.8rem; }
+    .section-header h2 { font-size: 1.2rem; }
+    .soal, .contoh { padding: 12px 14px; }
+    .math-box { font-size: 0.9rem; padding: 10px 12px; }
+    .nav-links a { font-size: 0.78rem; padding: 4px 10px; }
+    .strategi-box, .kesimpulan { padding: 10px 12px; font-size: 0.9rem; }
+  }
+  @media (max-width: 480px) {
+    .hero-text h1 { font-size: 1.3rem; }
+    .hero-text p { font-size: 0.9rem; }
+    .hero .badge { font-size: 11px; padding: 3px 14px; }
+    .hero { padding: 20px 14px; }
+    .section-num { width: 30px; height: 30px; font-size: 0.85rem; }
+    .section-header h2 { font-size: 1rem; }
+    .soal, .contoh { padding: 10px 12px; margin: 12px 0; }
+    .math-box { font-size: 0.82rem; padding: 8px 10px; }
+    .main { padding: 0 10px 30px; }
+    .sidebar { padding: 10px; }
+    .sidebar nav a { font-size: 0.72rem; padding: 2px 8px; }
+    .nav-links { flex-direction: column; align-items: stretch; gap: 6px; }
+    .nav-links .nav-center { text-align: center; }
+    .soal-nav { flex-direction: column; align-items: center; gap: 4px; }
+    .contoh-title, .soal-title { font-size: 0.9rem; }
+    .sub-soal { margin: 8px 0 6px 10px; padding-left: 8px; }
+  }
+  @media print {
+    .sidebar, .header-actions { display: none !important; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="toc-title">📋 Daftar Isi <span>5</span></div>
+    <nav id="toc-nav">
+      <a href="#soal-2-1" class="section-link">2.1 Luas + Panjang Kurva + Volume</a>
+      <a href="#soal-2-2">2.2 Luas Irisan Dua Parabola</a>
+      <a href="#soal-2-3">2.3 Volume Rotasi Sumbu y</a>
+      <a href="#soal-2-4">2.4 Volume Rotasi y = -1</a>
+      <a href="#soal-2-5">2.5 Luas Parabola Orde 4</a>
+      <a href="#navigasi" class="section-link" style="margin-top:16px;">Navigasi Part</a>
+      <a href="index.html" style="margin-top:4px;">← Kembali ke Index</a>
+      <a href="part1-integral-teknik.html">← Part 1: Teknik Integral</a>
+      <a href="part3-deret-konvergen.html">→ Part 3: Deret Tak Hingga</a>
+      <a href="part4-deret-taylor.html">Part 4: Taylor/Maclaurin</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="badge">KALKULUS — INTEGRAL</div>
+      <div class="hero-top">
+        <div class="hero-text">
+          <h1>Part 2: Aplikasi Integral</h1>
+          <p>Solusi lengkap 5 soal aplikasi integral: luas daerah, panjang kurva, dan volume benda putar — langkah demi langkah.</p>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌓</button>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <span>5 Soal</span>
+        <span>Luas • Panjang Kurva • Volume Rotasi</span>
+      </div>
+    </div>
+
+    <!-- SOAL 2.1 -->
+    <section id="soal-2-1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <h2>2.1 Luas + Panjang Kurva + Volume</h2>
+      </div>
+      <div class="soal">
+        <div class="soal-title">Soal 2.1</div>
+        <p>Daerah \(R\) dibatasi oleh \(y = x\sqrt{x}\), \(x = 1\), \(x = 4\), \(y = 0\). Hitung:</p>
+        <ol>
+          <li>Luas \(R\)</li>
+          <li>Panjang kurva \(y = x\sqrt{x}\) dari \(x = 1\) sampai \(x = 4\)</li>
+          <li>Volume benda yang diperoleh apabila \(R\) diputar mengelilingi sumbu \(x\)</li>
+          <li>Volume benda yang diperoleh apabila \(R\) diputar mengelilingi \(y = -1\)</li>
+        </ol>
+      </div>
+      <div class="strategi-box">
+        <strong>Strategi:</strong> Tulis \(y = x\sqrt{x} = x^{3/2}\). Untuk luas dan volume, gunakan integral tentu \(\int_1^4\). Untuk panjang kurva, gunakan rumus \(L = \int_a^b \sqrt{1+(y')^2}\,dx\). Untuk volume rotasi garis horizontal \(y = -1\), gunakan metode washer dengan jari-jari luar \(R(x) = y - (-1) = y+1\) dan jari-jari dalam \(r(x) = 1\).
+      </div>
+
+      <div class="sub-soal">
+        <h4>i. Luas \(R\)</h4>
+        <div class="contoh">
+          <div class="contoh-title">Penyelesaian</div>
+          <div class="math-box">\[
+          L = \int_1^4 x^{3/2}\,dx = \left[ \frac{2}{5}x^{5/2} \right]_1^4
+          = \frac{2}{5}\left(4^{5/2} - 1^{5/2}\right)
+          = \frac{2}{5}(32 - 1)
+          = \frac{2}{5} \cdot 31
+          = \frac{62}{5}
+          \]</div>
+        </div>
+        <div class="kesimpulan">\[
+        \boxed{L = \frac{62}{5}}
+        \]</div>
+      </div>
+
+      <div class="sub-soal">
+        <h4>ii. Panjang Kurva</h4>
+        <div class="contoh">
+          <div class="contoh-title">Penyelesaian</div>
+          <p><strong>Langkah 1:</strong> Hitung \(y'\) dan \(1 + (y')^2\).</p>
+          <div class="math-box">\[
+          y = x^{3/2}, \quad y' = \frac{3}{2}x^{1/2}
+          \]</div>
+          <div class="math-box">\[
+          1 + (y')^2 = 1 + \frac{9}{4}x = \frac{4 + 9x}{4}
+          \]</div>
+          <p><strong>Langkah 2:</strong> Gunakan rumus panjang kurva.</p>
+          <div class="math-box">\[
+          L = \int_1^4 \sqrt{1 + (y')^2}\,dx
+          = \int_1^4 \sqrt{\frac{4+9x}{4}}\,dx
+          = \frac12 \int_1^4 \sqrt{4+9x}\,dx
+          \]</div>
+          <p><strong>Langkah 3:</strong> Substitusi \(u = 4 + 9x\), \(du = 9\,dx\).</p>
+          <div class="math-box">\[
+          x = 1 \Rightarrow u = 13,\quad x = 4 \Rightarrow u = 40
+          \]</div>
+          <div class="math-box">\[
+          L = \frac12 \int_{13}^{40} \sqrt{u} \cdot \frac{du}{9}
+          = \frac{1}{18} \int_{13}^{40} u^{1/2}\,du
+          \]</div>
+          <p><strong>Langkah 4:</strong> Integrasikan.</p>
+          <div class="math-box">\[
+          \frac{1}{18} \cdot \frac{2}{3} \left[ u^{3/2} \right]_{13}^{40}
+          = \frac{1}{27} \left( 40^{3/2} - 13^{3/2} \right)
+          \]</div>
+          <div class="math-box">\[
+          40^{3/2} = 40\sqrt{40} = 40 \cdot 2\sqrt{10} = 80\sqrt{10},\qquad
+          13^{3/2} = 13\sqrt{13}
+          \]</div>
+        </div>
+        <div class="kesimpulan">\[
+        \boxed{L = \frac{1}{27}\left(80\sqrt{10} - 13\sqrt{13}\right)}
+        \]</div>
+      </div>
+
+      <div class="sub-soal">
+        <h4>iii. Volume Rotasi Sumbu \(x\)</h4>
+        <div class="contoh">
+          <div class="contoh-title">Penyelesaian</div>
+          <p>Metode cakram: \(V = \pi \int_1^4 [y(x)]^2\,dx\).</p>
+          <div class="math-box">\[
+          V = \pi \int_1^4 (x^{3/2})^2\,dx
+          = \pi \int_1^4 x^3\,dx
+          = \pi \left[ \frac{x^4}{4} \right]_1^4
+          = \pi \left( \frac{256}{4} - \frac{1}{4} \right)
+          = \frac{255\pi}{4}
+          \]</div>
+        </div>
+        <div class="kesimpulan">\[
+        \boxed{V = \frac{255\pi}{4}}
+        \]</div>
+      </div>
+
+      <div class="sub-soal">
+        <h4>iv. Volume Rotasi Garis \(y = -1\)</h4>
+        <div class="contoh">
+          <div class="contoh-title">Penyelesaian</div>
+          <p><strong>Langkah 1:</strong> Metode washer. Jari-jari luar \(R(x) = y - (-1) = x^{3/2} + 1\), jari-jari dalam \(r(x) = 0 - (-1) = 1\).</p>
+          <div class="math-box">\[
+          V = \pi \int_1^4 \left[ (x^{3/2} + 1)^2 - 1^2 \right] dx
+          \]</div>
+          <p><strong>Langkah 2:</strong> Sederhanakan integran.</p>
+          <div class="math-box">\[
+          (x^{3/2} + 1)^2 - 1 = (x^3 + 2x^{3/2} + 1) - 1 = x^3 + 2x^{3/2}
+          \]</div>
+          <p><strong>Langkah 3:</strong> Integrasikan.</p>
+          <div class="math-box">\[
+          \begin{aligned}
+          V &= \pi \int_1^4 (x^3 + 2x^{3/2})\,dx \\[4pt]
+          &= \pi \left[ \frac{x^4}{4} + 2\cdot\frac{2}{5}x^{5/2} \right]_1^4 \\[4pt]
+          &= \pi \left[ \frac{x^4}{4} + \frac{4}{5}x^{5/2} \right]_1^4
+          \end{aligned}
+          \]</div>
+          <p><strong>Langkah 4:</strong> Evaluasi batas.</p>
+          <div class="math-box">\[
+          \begin{aligned}
+          V &= \pi \left[ \left( \frac{256}{4} + \frac{4}{5}\cdot 32 \right) - \left( \frac{1}{4} + \frac{4}{5}\cdot 1 \right) \right] \\[4pt]
+          &= \pi \left[ \left( 64 + \frac{128}{5} \right) - \left( \frac14 + \frac45 \right) \right] \\[4pt]
+          &= \pi \left[ \left( \frac{320}{5} + \frac{128}{5} \right) - \left( \frac{5}{20} + \frac{16}{20} \right) \right] \\[4pt]
+          &= \pi \left( \frac{448}{5} - \frac{21}{20} \right)
+          = \pi \left( \frac{1792 - 21}{20} \right)
+          = \frac{1771\pi}{20}
+          \end{aligned}
+          \]</div>
+        </div>
+        <div class="kesimpulan">\[
+        \boxed{V = \frac{1771\pi}{20}}
+        \]</div>
+      </div>
+
+      <div class="soal-nav">
+        <span></span>
+        <a href="#soal-2-2">Soal 2.2 →</a>
+      </div>
+    </section>
+
+    <!-- SOAL 2.2 -->
+    <section id="soal-2-2">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <h2>2.2 Luas Daerah Irisan Dua Parabola</h2>
+      </div>
+      <div class="soal">
+        <div class="soal-title">Soal 2.2</div>
+        <p>Sketsalah daerah yang dibatasi oleh kurva \(4y^2 - 2x = 0\) dan \(4y^2 + 4x - 12 = 0\). Lalu hitung luas daerah tersebut.</p>
+      </div>
+      <div class="strategi-box">
+        <strong>Strategi:</strong> Nyatakan kedua persamaan dalam bentuk \(x = f(y)\). Irisan dua kurva menghasilkan batas integral terhadap \(y\). Hitung luas sebagai \(\int (x_{\text{kanan}} - x_{\text{kiri}})\,dy\).
+      </div>
+      <div class="contoh">
+        <div class="contoh-title">Penyelesaian</div>
+        <p><strong>Langkah 1:</strong> Ubah ke bentuk \(x = f(y)\).</p>
+        <div class="math-box">\[
+        4y^2 - 2x = 0 \;\Longrightarrow\; x = 2y^2
+        \]</div>
+        <div class="math-box">\[
+        4y^2 + 4x - 12 = 0 \;\Longrightarrow\; 4x = 12 - 4y^2 \;\Longrightarrow\; x = 3 - y^2
+        \]</div>
+        <p><strong>Langkah 2:</strong> Cari titik potong dengan menyamakan kedua persamaan.</p>
+        <div class="math-box">\[
+        2y^2 = 3 - y^2 \;\Longrightarrow\; 3y^2 = 3 \;\Longrightarrow\; y^2 = 1 \;\Longrightarrow\; y = \pm 1
+        \]</div>
+        <p>Substitusi \(y = 1\): \(x = 2(1)^2 = 2\). Titik potong: \((2,1)\) dan \((2,-1)\).</p>
+        <p><strong>Langkah 3:</strong> Hitung luas. Kurva kanan adalah \(x = 3 - y^2\), kurva kiri adalah \(x = 2y^2\).</p>
+        <div class="math-box">\[
+        \begin{aligned}
+        L &= \int_{-1}^{1} \left[ (3 - y^2) - 2y^2 \right] dy \\[4pt]
+        &= \int_{-1}^{1} (3 - 3y^2)\,dy
+        = 3 \int_{-1}^{1} (1 - y^2)\,dy \\[4pt]
+        &= 3 \left[ y - \frac{y^3}{3} \right]_{-1}^{1} \\[4pt]
+        &= 3 \left[ \left(1 - \frac13\right) - \left(-1 + \frac13\right) \right] \\[4pt]
+        &= 3 \left( \frac23 + \frac23 \right)
+        = 3 \cdot \frac43
+        = 4
+        \end{aligned}
+        \]</div>
+      </div>
+      <div class="kesimpulan">\[
+      \boxed{L = 4}
+      \]</div>
+      <div class="soal-nav">
+        <a href="#soal-2-1">← Soal 2.1</a>
+        <a href="#soal-2-3">Soal 2.3 →</a>
+      </div>
+    </section>
+
+    <!-- SOAL 2.3 -->
+    <section id="soal-2-3">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <h2>2.3 Volume Rotasi Mengelilingi Sumbu \(y\)</h2>
+      </div>
+      <div class="soal">
+        <div class="soal-title">Soal 2.3</div>
+        <p>Sketsalah daerah yang dibatasi oleh \(x = 2\sqrt{y}\), \(y = 4\), \(x = 0\). Tentukan volume benda solid yang diperoleh apabila daerah tersebut diputar mengelilingi sumbu-\(y\).</p>
+      </div>
+      <div class="strategi-box">
+        <strong>Strategi:</strong> Daerah dibatasi kurva \(x = 2\sqrt{y}\) dari \(y = 0\) sampai \(y = 4\). Rotasi sumbu-\(y\) menggunakan metode cakram dengan jari-jari \(x(y)\).
+      </div>
+      <div class="contoh">
+        <div class="contoh-title">Penyelesaian</div>
+        <p><strong>Langkah 1:</strong> Tulis \(x = 2\sqrt{y} = 2y^{1/2}\). Batas integral \(y = 0\) hingga \(y = 4\).</p>
+        <p><strong>Langkah 2:</strong> Gunakan metode cakram terhadap sumbu-\(y\).</p>
+        <div class="math-box">\[
+        V = \pi \int_0^4 [x(y)]^2\,dy
+        = \pi \int_0^4 (2\sqrt{y})^2\,dy
+        = \pi \int_0^4 4y\,dy
+        \]</div>
+        <p><strong>Langkah 3:</strong> Integrasikan.</p>
+        <div class="math-box">\[
+        V = 4\pi \left[ \frac{y^2}{2} \right]_0^4
+        = 4\pi \cdot \frac{16}{2}
+        = 4\pi \cdot 8
+        = 32\pi
+        \]</div>
+      </div>
+      <div class="kesimpulan">\[
+      \boxed{V = 32\pi}
+      \]</div>
+      <div class="soal-nav">
+        <a href="#soal-2-2">← Soal 2.2</a>
+        <a href="#soal-2-4">Soal 2.4 →</a>
+      </div>
+    </section>
+
+    <!-- SOAL 2.4 -->
+    <section id="soal-2-4">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <h2>2.4 Volume Rotasi Mengelilingi Garis \(y = -1\)</h2>
+      </div>
+      <div class="soal">
+        <div class="soal-title">Soal 2.4</div>
+        <p>Sketsalah daerah yang dibatasi oleh \(xy = 1\), \(y = 0\), \(x = 1\), \(x = 2\). Tentukan volume benda solid yang diperoleh apabila daerah tersebut diputar mengelilingi garis \(y = -1\).</p>
+      </div>
+      <div class="strategi-box">
+        <strong>Strategi:</strong> Daerah dibatasi \(y = 1/x\) dari \(x = 1\) sampai \(x = 2\). Rotasi terhadap \(y = -1\) menggunakan metode washer dengan jari-jari luar \(R(x) = y + 1\) dan jari-jari dalam \(r(x) = 1\).
+      </div>
+      <div class="contoh">
+        <div class="contoh-title">Penyelesaian</div>
+        <p><strong>Langkah 1:</strong> Tulis \(xy = 1 \Rightarrow y = \dfrac{1}{x}\).</p>
+        <p><strong>Langkah 2:</strong> Metode washer. Jari-jari luar \(R(x) = \dfrac{1}{x} + 1\), jari-jari dalam \(r(x) = 1\).</p>
+        <div class="math-box">\[
+        \begin{aligned}
+        V &= \pi \int_1^2 \left[ \left(\frac{1}{x} + 1\right)^2 - 1^2 \right] dx \\[4pt]
+        &= \pi \int_1^2 \left( \frac{1}{x^2} + \frac{2}{x} + 1 - 1 \right) dx \\[4pt]
+        &= \pi \int_1^2 \left( x^{-2} + 2x^{-1} \right) dx
+        \end{aligned}
+        \]</div>
+        <p><strong>Langkah 3:</strong> Integrasikan.</p>
+        <div class="math-box">\[
+        \begin{aligned}
+        V &= \pi \left[ \frac{x^{-1}}{-1} + 2\ln|x| \right]_1^2 \\[4pt]
+        &= \pi \left[ -\frac{1}{x} + 2\ln x \right]_1^2 \\[4pt]
+        &= \pi \left[ \left( -\frac12 + 2\ln 2 \right) - \left( -1 + 2\ln 1 \right) \right] \\[4pt]
+        &= \pi \left( -\frac12 + 2\ln 2 + 1 \right) \\[4pt]
+        &= \pi \left( \frac12 + 2\ln 2 \right)
+        \end{aligned}
+        \]</div>
+      </div>
+      <div class="kesimpulan">\[
+      \boxed{V = \pi \left( \frac12 + 2\ln 2 \right)}
+      \]</div>
+      <div class="soal-nav">
+        <a href="#soal-2-3">← Soal 2.3</a>
+        <a href="#soal-2-5">Soal 2.5 →</a>
+      </div>
+    </section>
+
+    <!-- SOAL 2.5 -->
+    <section id="soal-2-5">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <h2>2.5 Luas Daerah Parabola Orde 4</h2>
+      </div>
+      <div class="soal">
+        <div class="soal-title">Soal 2.5</div>
+        <p>Sketsalah daerah yang dibatasi oleh \(x = 4y^4\) dan \(x = 8 - 4y^4\). Lalu hitung luas daerah tersebut.</p>
+      </div>
+      <div class="strategi-box">
+        <strong>Strategi:</strong> Kedua kurva dinyatakan dalam \(x = f(y)\). Cari titik potong dengan menyamakan kedua persamaan, lalu hitung luas sebagai \(\int (x_{\text{kanan}} - x_{\text{kiri}})\,dy\).
+      </div>
+      <div class="contoh">
+        <div class="contoh-title">Penyelesaian</div>
+        <p><strong>Langkah 1:</strong> Cari titik potong.</p>
+        <div class="math-box">\[
+        4y^4 = 8 - 4y^4 \;\Longrightarrow\; 8y^4 = 8 \;\Longrightarrow\; y^4 = 1 \;\Longrightarrow\; y = \pm 1
+        \]</div>
+        <p>Substitusi \(y = 1\): \(x = 4(1)^4 = 4\). Titik potong: \((4,1)\) dan \((4,-1)\).</p>
+        <p><strong>Langkah 2:</strong> Kurva kanan adalah \(x = 8 - 4y^4\), kurva kiri adalah \(x = 4y^4\).</p>
+        <div class="math-box">\[
+        \begin{aligned}
+        L &= \int_{-1}^{1} \left[ (8 - 4y^4) - 4y^4 \right] dy \\[4pt]
+        &= \int_{-1}^{1} (8 - 8y^4)\,dy
+        = 8 \int_{-1}^{1} (1 - y^4)\,dy \\[4pt]
+        &= 8 \left[ y - \frac{y^5}{5} \right]_{-1}^{1} \\[4pt]
+        &= 8 \left[ \left(1 - \frac15\right) - \left(-1 + \frac15\right) \right] \\[4pt]
+        &= 8 \left( \frac45 + \frac45 \right)
+        = 8 \cdot \frac85
+        = \frac{64}{5}
+        \end{aligned}
+        \]</div>
+      </div>
+      <div class="kesimpulan">\[
+      \boxed{L = \frac{64}{5}}
+      \]</div>
+      <div class="soal-nav">
+        <a href="#soal-2-4">← Soal 2.4</a>
+        <span></span>
+      </div>
+    </section>
+
+    <!-- NAVIGASI ANTAR PART -->
+    <section id="navigasi" style="margin-top:60px;">
+      <div class="nav-links">
+        <a href="index.html">← Index</a>
+        <a href="part1-integral-teknik.html">← Part 1: Teknik Integral</a>
+        <span class="nav-center">Part 2: Aplikasi Integral (5 soal)</span>
+        <a href="part3-deret-konvergen.html">Part 3: Deret Tak Hingga →</a>
+      </div>
+      <div class="nav-links" style="border-top:none; margin-top:0;">
+        <a href="part4-deret-taylor.html">Part 4: Taylor/Maclaurin</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  var saved = localStorage.getItem('module-theme');
+  if (saved === 'dark') document.documentElement.classList.add('dark');
+  document.getElementById('themeBtn').addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('module-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  });
+  var tocLinks = document.querySelectorAll('.sidebar nav a');
+  tocLinks.forEach(function(a) {
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'toc-check';
+    var sectionId = a.getAttribute('href').replace('#', '');
+    cb.checked = localStorage.getItem('sec-' + sectionId) === '1';
+    cb.addEventListener('change', function() {
+      localStorage.setItem('sec-' + sectionId, cb.checked ? '1' : '0');
+    });
+    a.prepend(cb);
+  });
+})();
+</script>
+</body>
+</html>
